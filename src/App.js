@@ -1,17 +1,36 @@
 import './App.scss';
 import React from 'react';
+import axios from 'axios';
 
 
-const testData = [
-    {name: "Dan Abramov", avatar_url: "https://avatars0.githubusercontent.com/u/810438?v=4", company: "@facebook"},
-    {name: "Sophie Alpert", avatar_url: "https://avatars2.githubusercontent.com/u/6820?v=4", company: "Humu"},
-    {name: "Sebastian Markbåge", avatar_url: "https://avatars2.githubusercontent.com/u/63648?v=4", company: "Facebook"},
-];
+class Form extends React.Component {
+    state = { userName: '' };
+    handleSubmit = async (event) => {
+        event.preventDefault();
+        const response = await axios.get(`https://api.github.com/users/${this.state.userName}`);
+        this.props.onSubmit(response.data);
+        this.setState({userName: ''});
+    };
+    render() {
+        return (
+            <form onSubmit={this.handleSubmit}>
+                <input
+                    type="text"
+                    value={this.state.userName}
+                    onChange={event => this.setState({userName: event.target.value})}
+                    placeholder="Github username"
+                    required
+                />
+                <button>Add card</button>
+            </form>
+        );
+    }
+}
 
 
 const CardList = (props) => (
     <div>
-        {testData.map(profile => <Card {...profile}/>)}
+        {props.profiles.map(profile => <Card key={profile.id} {...profile}/>)}
     </div>
 );
 
@@ -31,11 +50,23 @@ class Card extends React.Component {
 }
 
 class App extends React.Component {
+    state = {
+        profiles: [],
+    };
+
+    addNewProfile = (profileData) => {
+        console.log(profileData);
+        this.setState(prevState => ({
+            profiles: [...prevState.profiles, profileData]
+        }))
+    };
+
     render() {
         return (
             <div>
                 <div className="header">{this.props.title}</div>
-                <CardList />
+                <Form onSubmit={this.addNewProfile}/>
+                <CardList profiles={this.state.profiles} />
             </div>
         );
     }
