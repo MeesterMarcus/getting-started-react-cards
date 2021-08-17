@@ -41,7 +41,7 @@ class Card extends React.Component {
     const profile = this.props;
     return (
       <div className="github-profile">
-        <a href={"https://www.github.com/" + profile.login}>
+        <a target="_blank" href={"https://www.github.com/" + profile.login} rel="noreferrer">
           <img alt="profile" src={profile.avatar_url} />
         </a>
         <div className="info">
